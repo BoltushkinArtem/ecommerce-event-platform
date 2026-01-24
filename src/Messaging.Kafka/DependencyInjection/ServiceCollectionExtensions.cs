@@ -1,3 +1,4 @@
+using Messaging.Kafka.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -12,11 +13,11 @@ public static class ServiceCollectionExtensions
     {
         services.AddKafkaCoreMessaging(configuration);
         
-        if (mode is KafkaMessagingMode.OnlyProducer or KafkaMessagingMode.ProducerAndConsumer)
+        if (mode is KafkaMessagingMode.Producer or KafkaMessagingMode.ProducerAndConsumer)
         {
             services.AddKafkaProducerMessaging(configuration);
         }
-        if (mode is KafkaMessagingMode.OnlyConsumer or KafkaMessagingMode.ProducerAndConsumer)
+        if (mode is KafkaMessagingMode.Consumer or KafkaMessagingMode.ProducerAndConsumer)
         {
             services.AddKafkaConsumerMessaging(configuration);
         }

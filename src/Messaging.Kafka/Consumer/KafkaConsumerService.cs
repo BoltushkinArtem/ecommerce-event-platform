@@ -1,8 +1,9 @@
 using System.Diagnostics;
 using Confluent.Kafka;
 using Messaging.Abstractions;
-using Messaging.Abstractions.Registry;
 using Messaging.Kafka.Configuration;
+using Messaging.Kafka.Factories;
+using Messaging.Kafka.Registry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

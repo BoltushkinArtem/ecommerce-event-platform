@@ -2,7 +2,7 @@ using Confluent.Kafka;
 
 namespace Messaging.Kafka.Configuration;
 
-public sealed class KafkaProducerOptions
+public sealed class KafkaProducerOptions : IKafkaTopicsOptions
 {
     public IReadOnlyCollection<KafkaTopicOptions> Topics { get; init; } = [];
     public Acks Acks { get; init; } = Acks.All;

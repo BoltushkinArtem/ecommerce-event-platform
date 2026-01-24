@@ -1,6 +1,7 @@
 using Messaging.Abstractions;
 using Messaging.Abstractions.Handlers;
-using Messaging.Abstractions.Registry;
+using Messaging.Kafka.Registry;
+using Messaging.Kafka.Topics;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Messaging.Kafka.DependencyInjection;
@@ -9,7 +10,6 @@ public static class KafkaHandlerServiceCollectionExtensions
 {
     public static IServiceCollection AddKafkaHandler<TEvent, THandler>(
         this IServiceCollection services)
-        // where TEvent : class, IIntegrationEvent
         where TEvent : class
         where THandler : class, IKafkaMessageHandler<TEvent>
     {

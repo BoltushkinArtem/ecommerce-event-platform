@@ -1,6 +1,6 @@
 using Polly;
 
-namespace Messaging.Kafka.Producer.Factories;
+namespace Messaging.Kafka.Factories;
 
 public interface IKafkaRetryPolicyFactory
 {

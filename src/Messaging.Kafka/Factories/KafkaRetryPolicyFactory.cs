@@ -3,7 +3,7 @@ using Messaging.Kafka.Configuration;
 using Microsoft.Extensions.Options;
 using Polly;
 
-namespace Messaging.Kafka.Producer.Factories;
+namespace Messaging.Kafka.Factories;
 
 public sealed class KafkaRetryPolicyFactory : IKafkaRetryPolicyFactory
 {

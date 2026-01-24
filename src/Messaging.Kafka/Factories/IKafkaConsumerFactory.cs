@@ -1,6 +1,6 @@
 using Confluent.Kafka;
 
-namespace Messaging.Kafka.Consumer;
+namespace Messaging.Kafka.Factories;
 
 public interface IKafkaConsumerFactory
 {

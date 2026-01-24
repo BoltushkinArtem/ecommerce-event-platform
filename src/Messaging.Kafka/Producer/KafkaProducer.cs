@@ -1,7 +1,8 @@
 using System.Diagnostics;
 using Confluent.Kafka;
 using Messaging.Abstractions;
-using Messaging.Kafka.Producer.Factories;
+using Messaging.Kafka.Factories;
+using Messaging.Kafka.Topics;
 using Microsoft.Extensions.Logging;
 using Polly;
 

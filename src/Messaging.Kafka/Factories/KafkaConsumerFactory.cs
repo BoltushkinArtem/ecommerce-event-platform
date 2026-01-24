@@ -3,7 +3,7 @@ using Messaging.Kafka.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Messaging.Kafka.Consumer;
+namespace Messaging.Kafka.Factories;
 
 public sealed class KafkaConsumerFactory : IKafkaConsumerFactory
 {

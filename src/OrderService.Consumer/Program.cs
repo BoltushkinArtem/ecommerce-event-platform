@@ -1,4 +1,5 @@
-﻿using Messaging.Kafka.DependencyInjection;
+﻿using Messaging.Kafka.Configuration;
+using Messaging.Kafka.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -27,7 +28,7 @@ try
                 builder.AddSerilog();
             });
             
-            services.AddKafkaMessaging(context.Configuration, KafkaMessagingMode.OnlyConsumer);
+            services.AddKafkaMessaging(context.Configuration, KafkaMessagingMode.Consumer);
             services.AddKafkaHandler<OrderCreated, OrderCreatedHandler>();
         })
         .UseConsoleLifetime()

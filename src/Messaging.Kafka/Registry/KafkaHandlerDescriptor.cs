@@ -1,4 +1,4 @@
-namespace Messaging.Abstractions.Registry;
+namespace Messaging.Kafka.Registry;
 
 public sealed record KafkaHandlerDescriptor(
     string Topic,

@@ -1,8 +1,8 @@
 
 using Messaging.Abstractions;
-using Messaging.Abstractions.Registry;
 using Messaging.Kafka.Configuration;
 using Messaging.Kafka.Consumer;
+using Messaging.Kafka.Factories;
 using Messaging.Kafka.Registry;
 using Messaging.Kafka.Topics;
 using Microsoft.Extensions.Configuration;

@@ -1,4 +1,5 @@
 ﻿using Messaging.Abstractions;
+using Messaging.Kafka.Configuration;
 using Messaging.Kafka.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using OrderService.Contracts.Events;
@@ -25,7 +26,7 @@ try
         builder.ClearProviders();
         builder.AddSerilog();
     });
-    services.AddKafkaMessaging(configuration, KafkaMessagingMode.OnlyProducer);
+    services.AddKafkaMessaging(configuration, KafkaMessagingMode.Producer);
 
     var provider = services.BuildServiceProvider();
 

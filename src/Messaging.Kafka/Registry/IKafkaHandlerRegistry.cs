@@ -1,4 +1,4 @@
-namespace Messaging.Abstractions.Registry;
+namespace Messaging.Kafka.Registry;
 
 public interface IKafkaHandlerRegistry
 {

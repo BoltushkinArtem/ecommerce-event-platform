@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Messaging.Kafka.DependencyInjection;
 
-public static class ServiceCollectionExtensions
+public static class KafkaServiceCollectionExtensions
 {
     public static IServiceCollection AddKafkaMessaging(
         this IServiceCollection services,

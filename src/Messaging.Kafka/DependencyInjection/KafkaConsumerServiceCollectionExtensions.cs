@@ -1,5 +1,3 @@
-
-using Messaging.Abstractions;
 using Messaging.Kafka.Configuration;
 using Messaging.Kafka.Consumer;
 using Messaging.Kafka.Factories;

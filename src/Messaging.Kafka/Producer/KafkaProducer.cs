@@ -16,7 +16,7 @@ public sealed class KafkaProducer : IKafkaProducer, IAsyncDisposable
 
     private readonly IProducer<string, string> _producer;
     private readonly IKafkaMessageSerializer _serializer;
-    private readonly IKafkaTopicResolver _kafkaTopicResolver;
+    private readonly IKafkaProducerTopicResolver _kafkaProducerTopicResolver;
     private readonly IAsyncPolicy _retryPolicy;
 
     public KafkaProducer(
@@ -24,11 +24,11 @@ public sealed class KafkaProducer : IKafkaProducer, IAsyncDisposable
         IKafkaProducerFactory producerFactory,
         IKafkaRetryPolicyFactory retryPolicyFactory,
         IKafkaMessageSerializer serializer,
-        IKafkaTopicResolver kafkaTopicResolver)
+        IKafkaProducerTopicResolver kafkaProducerTopicResolver)
     {
         _logger = logger;
         _serializer = serializer;
-        _kafkaTopicResolver = kafkaTopicResolver;
+        _kafkaProducerTopicResolver = kafkaProducerTopicResolver;
 
         _producer = producerFactory.Create();
         _retryPolicy = retryPolicyFactory.Create();
@@ -40,7 +40,7 @@ public sealed class KafkaProducer : IKafkaProducer, IAsyncDisposable
         CancellationToken ct = default)
     {
         var eventType = typeof(T).Name;
-        var topic = _kafkaTopicResolver.Resolve<T>();
+        var topic = _kafkaProducerTopicResolver.Resolve<T>();
 
         using var activity = ActivitySource.StartActivity(
             "kafka.produce",

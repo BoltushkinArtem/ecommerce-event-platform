@@ -25,8 +25,7 @@ try
         builder.ClearProviders();
         builder.AddSerilog();
     });
-
-    services.AddKafkaMessaging(configuration);
+    services.AddKafkaMessaging(configuration, KafkaMessagingMode.OnlyProducer);
 
     var provider = services.BuildServiceProvider();
 

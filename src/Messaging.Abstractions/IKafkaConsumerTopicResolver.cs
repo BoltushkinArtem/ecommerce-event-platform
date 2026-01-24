@@ -1,6 +1,6 @@
 namespace Messaging.Abstractions;
 
-public interface IKafkaTopicResolver
+public interface IKafkaConsumerTopicResolver
 {
     string Resolve<TEvent>();
 }

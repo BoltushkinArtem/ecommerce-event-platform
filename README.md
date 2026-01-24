@@ -83,7 +83,7 @@ ecommerce-event-platform/
         │   └── Events/
         │       └── OrderCreated.cs
         │
-        └── OrderService.Producer.Console/
+        └── OrderService.Producer/
             ├── appsettings.json
             └── Program.cs
 ```

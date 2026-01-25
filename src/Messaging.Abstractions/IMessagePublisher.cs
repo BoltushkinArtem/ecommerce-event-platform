@@ -1,6 +1,6 @@
 namespace Messaging.Abstractions;
 
-public interface IKafkaProducer
+public interface IMessagePublisher
 {
     Task ProduceAsync<T>(
         string key,

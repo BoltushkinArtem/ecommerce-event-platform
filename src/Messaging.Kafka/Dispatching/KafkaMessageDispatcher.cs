@@ -1,6 +1,7 @@
 using Confluent.Kafka;
 using Messaging.Abstractions;
 using Messaging.Kafka.Registry;
+using Messaging.Kafka.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Messaging.Kafka.Dispatching;

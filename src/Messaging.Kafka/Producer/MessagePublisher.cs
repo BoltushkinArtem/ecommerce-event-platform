@@ -2,19 +2,20 @@ using System.Diagnostics;
 using Confluent.Kafka;
 using Messaging.Abstractions;
 using Messaging.Kafka.Factories;
+using Messaging.Kafka.Serialization;
 using Messaging.Kafka.Topics;
 using Microsoft.Extensions.Logging;
 using Polly;
 
 namespace Messaging.Kafka.Producer;
 
-public sealed class KafkaProducer(
-    ILogger<KafkaProducer> logger,
+public sealed class MessagePublisher(
+    ILogger<MessagePublisher> logger,
     IKafkaProducerFactory producerFactory,
     IKafkaRetryPolicyFactory retryPolicyFactory,
     IKafkaMessageSerializer serializer,
     IKafkaProducerTopicResolver kafkaProducerTopicResolver)
-    : IKafkaProducer, IAsyncDisposable
+    : IMessagePublisher, IAsyncDisposable
 {
     private static readonly ActivitySource ActivitySource =
         new("messaging.kafka.producer");

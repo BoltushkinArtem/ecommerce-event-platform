@@ -25,7 +25,7 @@ public static class KafkaProducerServiceCollectionExtensions
         services.AddSingleton<IKafkaProducerTopicResolver, KafkaProducerTopicResolver>();
         services.AddSingleton<IKafkaProducerFactory, KafkaProducerFactory>();
         services.AddSingleton<IKafkaRetryPolicyFactory, KafkaRetryPolicyFactory>();
-        services.AddSingleton<IKafkaProducer, KafkaProducer>();
+        services.AddSingleton<IMessagePublisher, MessagePublisher>();
 
         return services;
     }

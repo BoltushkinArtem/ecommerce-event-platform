@@ -4,7 +4,7 @@ using OrderService.Contracts.Events;
 
 namespace OrderService.Consumer.Handlers;
 
-public sealed class OrderCreatedHandler: IKafkaMessageHandler<OrderCreated>
+public sealed class OrderCreatedHandler: IMessageHandler<OrderCreated>
 {
     private readonly ILogger<OrderCreatedHandler> _logger;
     // сюда позже добавятся:

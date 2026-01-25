@@ -1,6 +1,6 @@
 namespace Messaging.Abstractions;
 
-public interface IKafkaMessageHandler<in TMessage>
+public interface IMessageHandler<in TMessage>
 {
     Task HandleAsync(TMessage message, CancellationToken ct);
 }

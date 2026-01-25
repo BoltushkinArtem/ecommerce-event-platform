@@ -1,4 +1,4 @@
-namespace Messaging.Abstractions;
+namespace Messaging.Kafka.Topics.Base;
 
 public interface IKafkaTopicResolver
 {

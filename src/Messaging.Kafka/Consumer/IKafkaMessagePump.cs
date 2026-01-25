@@ -1,4 +1,4 @@
-namespace Messaging.Abstractions;
+namespace Messaging.Kafka.Consumer;
 
 public interface IKafkaMessagePump
 {

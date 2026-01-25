@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Messaging.Abstractions\Messaging.Abstractions.csproj" />
+      <ProjectReference Include="..\Messaging.Kafka\Messaging.Kafka.csproj" />
     </ItemGroup>
 
     <ItemGroup>

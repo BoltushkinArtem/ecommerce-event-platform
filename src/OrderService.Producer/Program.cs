@@ -30,7 +30,7 @@ try
 
     var provider = services.BuildServiceProvider();
 
-    var producer = provider.GetRequiredService<IKafkaProducer>();
+    var producer = provider.GetRequiredService<IMessagePublisher>();
 
     await producer.ProduceAsync(
         Guid.NewGuid().ToString(),

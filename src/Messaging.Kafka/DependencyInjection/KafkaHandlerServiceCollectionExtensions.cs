@@ -10,9 +10,9 @@ public static class KafkaHandlerServiceCollectionExtensions
     public static IServiceCollection AddKafkaHandler<TEvent, THandler>(
         this IServiceCollection services)
         where TEvent : class
-        where THandler : class, IKafkaMessageHandler<TEvent>
+        where THandler : class, IMessageHandler<TEvent>
     {
-        services.AddScoped<IKafkaMessageHandler<TEvent>, THandler>();
+        services.AddScoped<IMessageHandler<TEvent>, THandler>();
 
         using var sp = services.BuildServiceProvider();
         var resolver = sp.GetRequiredService<IKafkaConsumerTopicResolver>();

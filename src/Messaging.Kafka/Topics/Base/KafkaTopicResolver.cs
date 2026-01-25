@@ -1,5 +1,4 @@
 using Messaging.Abstractions;
-using Messaging.Abstractions.Metadata;
 using Messaging.Kafka.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -12,7 +11,7 @@ public class KafkaTopicResolver<TOptions> : IKafkaTopicResolver
     private readonly IReadOnlyDictionary<string, KafkaTopicDefinition> _topics;
     private readonly ILogger<KafkaTopicResolver<TOptions>> _logger;
 
-    public KafkaTopicResolver(
+    protected KafkaTopicResolver(
         IOptions<TOptions> options,
         ILogger<KafkaTopicResolver<TOptions>> logger)
     {

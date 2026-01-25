@@ -3,19 +3,14 @@ using Messaging.Abstractions;
 
 namespace Messaging.Kafka.Serialization;
 
-public sealed class KafkaMessageSerializer : IKafkaMessageSerializer
+public sealed class KafkaMessageSerializer(JsonSerializerOptions? options = null) : IKafkaMessageSerializer
 {
-    private readonly JsonSerializerOptions _options;
-
-    public KafkaMessageSerializer(JsonSerializerOptions? options = null)
+    private readonly JsonSerializerOptions _options = options ?? new JsonSerializerOptions
     {
-        _options = options ?? new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            PropertyNameCaseInsensitive = true,
-            WriteIndented = false
-        };
-    }
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        PropertyNameCaseInsensitive = true,
+        WriteIndented = false
+    };
 
     public string Serialize<T>(T message)
         => JsonSerializer.Serialize(message, _options);

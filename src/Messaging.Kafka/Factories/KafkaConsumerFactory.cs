@@ -5,21 +5,14 @@ using Microsoft.Extensions.Options;
 
 namespace Messaging.Kafka.Factories;
 
-public sealed class KafkaConsumerFactory : IKafkaConsumerFactory
+public sealed class KafkaConsumerFactory(
+    IOptions<KafkaOptions> kafkaOptions,
+    IOptions<KafkaConsumerOptions> kafkaConsumerOptions,
+    ILogger<KafkaConsumerFactory> logger)
+    : IKafkaConsumerFactory
 {
-    private readonly KafkaOptions _kafkaOptions;
-    private readonly KafkaConsumerOptions _kafkaConsumerOptions;
-    private readonly ILogger<KafkaConsumerFactory> _logger;
-
-    public KafkaConsumerFactory(
-        IOptions<KafkaOptions> kafkaOptions,
-        IOptions<KafkaConsumerOptions> kafkaConsumerOptions,
-        ILogger<KafkaConsumerFactory> logger)
-    {
-        _kafkaOptions = kafkaOptions.Value;
-        _kafkaConsumerOptions = kafkaConsumerOptions.Value;
-        _logger = logger;
-    }
+    private readonly KafkaOptions _kafkaOptions = kafkaOptions.Value;
+    private readonly KafkaConsumerOptions _kafkaConsumerOptions = kafkaConsumerOptions.Value;
 
     public IConsumer<string, string> Create()
     {
@@ -31,7 +24,7 @@ public sealed class KafkaConsumerFactory : IKafkaConsumerFactory
             AutoOffsetReset = AutoOffsetReset.Earliest
         };
 
-        _logger.LogInformation(
+        logger.LogInformation(
             "Creating Kafka consumer. GroupId={GroupId}, BootstrapServers={BootstrapServers}",
             config.GroupId,
             config.BootstrapServers);

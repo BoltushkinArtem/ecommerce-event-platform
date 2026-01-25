@@ -8,32 +8,19 @@ using Polly;
 
 namespace Messaging.Kafka.Producer;
 
-public sealed class KafkaProducer : IKafkaProducer, IAsyncDisposable
+public sealed class KafkaProducer(
+    ILogger<KafkaProducer> logger,
+    IKafkaProducerFactory producerFactory,
+    IKafkaRetryPolicyFactory retryPolicyFactory,
+    IKafkaMessageSerializer serializer,
+    IKafkaProducerTopicResolver kafkaProducerTopicResolver)
+    : IKafkaProducer, IAsyncDisposable
 {
     private static readonly ActivitySource ActivitySource =
         new("messaging.kafka.producer");
 
-    private readonly ILogger<KafkaProducer> _logger;
-
-    private readonly IProducer<string, string> _producer;
-    private readonly IKafkaMessageSerializer _serializer;
-    private readonly IKafkaProducerTopicResolver _kafkaProducerTopicResolver;
-    private readonly IAsyncPolicy _retryPolicy;
-
-    public KafkaProducer(
-        ILogger<KafkaProducer> logger,
-        IKafkaProducerFactory producerFactory,
-        IKafkaRetryPolicyFactory retryPolicyFactory,
-        IKafkaMessageSerializer serializer,
-        IKafkaProducerTopicResolver kafkaProducerTopicResolver)
-    {
-        _logger = logger;
-        _serializer = serializer;
-        _kafkaProducerTopicResolver = kafkaProducerTopicResolver;
-
-        _producer = producerFactory.Create();
-        _retryPolicy = retryPolicyFactory.Create();
-    }
+    private readonly IProducer<string, string> _producer = producerFactory.Create();
+    private readonly IAsyncPolicy _retryPolicy = retryPolicyFactory.Create();
 
     public async Task ProduceAsync<T>(
         string key,
@@ -41,7 +28,7 @@ public sealed class KafkaProducer : IKafkaProducer, IAsyncDisposable
         CancellationToken ct = default)
     {
         var eventType = typeof(T).Name;
-        var topic = _kafkaProducerTopicResolver.Resolve<T>();
+        var topic = kafkaProducerTopicResolver.Resolve<T>();
 
         using var activity = ActivitySource.StartActivity(
             "kafka.produce",
@@ -51,7 +38,7 @@ public sealed class KafkaProducer : IKafkaProducer, IAsyncDisposable
         activity?.SetTag("messaging.destination", topic);
         activity?.SetTag("messaging.message_type", eventType);
 
-        _logger.LogInformation(
+        logger.LogInformation(
             "Producing Kafka event. EventType={EventType}, Topic={Topic}",
             eventType,
             topic);
@@ -65,11 +52,11 @@ public sealed class KafkaProducer : IKafkaProducer, IAsyncDisposable
                     new Message<string, string>
                     {
                         Key = key,
-                        Value = _serializer.Serialize(message)
+                        Value = serializer.Serialize(message)
                     },
                     token);
 
-                _logger.LogInformation(
+                logger.LogInformation(
                     "Kafka event produced successfully. " +
                     "EventType={EventType}, Topic={Topic}, Partition={Partition}, Offset={Offset}",
                     eventType,
@@ -83,7 +70,7 @@ public sealed class KafkaProducer : IKafkaProducer, IAsyncDisposable
                     ActivityStatusCode.Error,
                     "Fatal Kafka error");
 
-                _logger.LogCritical(
+                logger.LogCritical(
                     ex,
                     "Fatal Kafka error. Producer is not recoverable. Topic={Topic}",
                     topic);
@@ -95,7 +82,7 @@ public sealed class KafkaProducer : IKafkaProducer, IAsyncDisposable
                     ActivityStatusCode.Error,
                     "Transient Kafka error");
 
-                _logger.LogWarning(
+                logger.LogWarning(
                     ex,
                     "Transient Kafka produce failure. EventType={EventType}, Topic={Topic}",
                     eventType,
@@ -108,7 +95,7 @@ public sealed class KafkaProducer : IKafkaProducer, IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        _logger.LogInformation("Shutting down Kafka producer");
+        logger.LogInformation("Shutting down Kafka producer");
 
         try
         {
@@ -116,7 +103,7 @@ public sealed class KafkaProducer : IKafkaProducer, IAsyncDisposable
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Kafka producer flush failed");
+            logger.LogWarning(ex, "Kafka producer flush failed");
         }
         finally
         {

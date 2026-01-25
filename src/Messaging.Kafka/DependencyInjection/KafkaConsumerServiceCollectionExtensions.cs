@@ -1,5 +1,7 @@
+using Messaging.Abstractions;
 using Messaging.Kafka.Configuration;
 using Messaging.Kafka.Consumer;
+using Messaging.Kafka.Dispatching;
 using Messaging.Kafka.Factories;
 using Messaging.Kafka.Registry;
 using Messaging.Kafka.Topics;
@@ -24,7 +26,8 @@ public static class KafkaConsumerServiceCollectionExtensions
         services.AddSingleton<IKafkaConsumerTopicResolver, KafkaConsumerTopicResolver>();
         services.AddSingleton<IKafkaConsumerFactory, KafkaConsumerFactory>();
         services.AddSingleton<IKafkaHandlerRegistry, KafkaHandlerRegistry>();
-        services.AddHostedService<KafkaConsumerService>();
+        services.AddSingleton<IKafkaMessageDispatcher, KafkaMessageDispatcher>();
+        services.AddSingleton<IKafkaMessagePump, KafkaMessagePump>();
 
         return services;
     }

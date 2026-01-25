@@ -1,4 +1,4 @@
-namespace Messaging.Abstractions.Handlers;
+namespace Messaging.Abstractions;
 
 public interface IKafkaMessageHandler<in TMessage>
 {

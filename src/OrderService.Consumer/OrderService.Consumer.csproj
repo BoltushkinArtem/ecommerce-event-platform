@@ -17,6 +17,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Messaging.Abstractions\Messaging.Abstractions.csproj" />
+      <ProjectReference Include="..\Messaging.Hosting\Messaging.Hosting.csproj" />
       <ProjectReference Include="..\Messaging.Kafka\Messaging.Kafka.csproj" />
       <ProjectReference Include="..\OrderService.Contracts\OrderService.Contracts.csproj" />
     </ItemGroup>

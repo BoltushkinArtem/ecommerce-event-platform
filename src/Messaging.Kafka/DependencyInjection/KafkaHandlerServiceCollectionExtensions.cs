@@ -1,5 +1,4 @@
 using Messaging.Abstractions;
-using Messaging.Abstractions.Handlers;
 using Messaging.Kafka.Registry;
 using Messaging.Kafka.Topics;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,4 +1,5 @@
-﻿using Messaging.Kafka.Configuration;
+﻿using Messaging.Hosting.Kafka;
+using Messaging.Kafka.Configuration;
 using Messaging.Kafka.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,6 +30,7 @@ try
             });
             
             services.AddKafkaMessaging(context.Configuration, KafkaMessagingMode.Consumer);
+            services.AddHostedService<KafkaConsumerHostedService>();
             services.AddKafkaHandler<OrderCreated, OrderCreatedHandler>();
         })
         .UseConsoleLifetime()

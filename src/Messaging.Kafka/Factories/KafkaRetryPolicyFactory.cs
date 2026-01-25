@@ -5,14 +5,9 @@ using Polly;
 
 namespace Messaging.Kafka.Factories;
 
-public sealed class KafkaRetryPolicyFactory : IKafkaRetryPolicyFactory
+public sealed class KafkaRetryPolicyFactory(IOptions<KafkaOptions> options) : IKafkaRetryPolicyFactory
 {
-    private readonly KafkaRetryOptions _options;
-
-    public KafkaRetryPolicyFactory(IOptions<KafkaOptions> options)
-    {
-        _options = options.Value.Retry;
-    }
+    private readonly KafkaRetryOptions _options = options.Value.Retry;
 
     public IAsyncPolicy Create()
     {

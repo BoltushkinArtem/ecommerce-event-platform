@@ -18,11 +18,15 @@ public static class KafkaHandlerServiceCollectionExtensions
         var resolver = sp.GetRequiredService<IKafkaConsumerTopicResolver>();
 
         var topic = resolver.Resolve<TEvent>();
-
-        services.AddSingleton(new KafkaHandlerDescriptor(
-            Topic: topic,
-            EventType: typeof(TEvent),
-            HandlerType: typeof(THandler)));
+        
+        services.Configure<KafkaHandlerRegistryOptions>(options =>
+        {
+            options.Handlers.Add(
+                new KafkaHandlerDescriptor(
+                    Topic: topic,
+                    EventType: typeof(TEvent),
+                    HandlerType: typeof(THandler)));
+        });
         
         services.AddScoped<THandler>();
 

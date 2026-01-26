@@ -1,13 +1,15 @@
 
+using Microsoft.Extensions.Options;
+
 namespace Messaging.Kafka.Registry;
 
 public sealed class KafkaHandlerRegistry : IKafkaHandlerRegistry
 {
     private readonly Dictionary<string, KafkaHandlerDescriptor> _byTopic;
 
-    public KafkaHandlerRegistry(IEnumerable<KafkaHandlerDescriptor> descriptors)
+    public KafkaHandlerRegistry(IOptions<KafkaHandlerRegistryOptions> options)
     {
-        _byTopic = descriptors.ToDictionary(d => d.Topic);
+        _byTopic = options.Value.Handlers.ToDictionary(d => d.Topic);
     }
 
     public KafkaHandlerDescriptor GetDescriptor(string topic)

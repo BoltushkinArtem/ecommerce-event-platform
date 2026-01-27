@@ -21,11 +21,11 @@ public sealed class KafkaMessagePump(
 
         while (!ct.IsCancellationRequested)
         {
-            var result = _consumer.Consume(ct);
-            if (result is null) continue;
-
             try
             {
+                var result = _consumer.Consume(ct);
+                if (result is null) continue;
+                
                 await dispatcher.DispatchAsync(result, ct);
                 _consumer.Commit(result);
             }

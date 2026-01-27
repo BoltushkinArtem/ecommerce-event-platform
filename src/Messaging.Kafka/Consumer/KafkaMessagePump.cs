@@ -13,27 +13,42 @@ public sealed class KafkaMessagePump(
     ILogger<KafkaMessagePump> logger)
     : IKafkaMessagePump
 {
-    private readonly IConsumer<string, string> _consumer = consumerFactory.Create();
+    private readonly IConsumer<string, string> _consumer =
+        consumerFactory.Create();
 
     public async Task RunAsync(CancellationToken ct)
     {
         _consumer.Subscribe(registry.Topics);
 
-        while (!ct.IsCancellationRequested)
+        try
         {
-            try
+            while (!ct.IsCancellationRequested)
             {
                 var result = _consumer.Consume(ct);
                 if (result is null) continue;
-                
+
                 await dispatcher.DispatchAsync(result, ct);
                 _consumer.Commit(result);
             }
+        }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            logger.LogInformation("Kafka consumer shutdown requested");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to process Kafka message");
+            throw;
+        }
+        finally
+        {
+            try
+            {
+                _consumer.Close();
+            }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to process message");
-                
-                throw;
+                logger.LogWarning(ex, "Error while closing Kafka consumer");
             }
         }
     }

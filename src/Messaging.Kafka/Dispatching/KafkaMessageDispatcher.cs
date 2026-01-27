@@ -17,16 +17,12 @@ public sealed class KafkaMessageDispatcher(
         CancellationToken ct)
     {
         var descriptor = registry.GetDescriptor(result.Topic);
-        var message = serializer.Deserialize(
-            result.Message.Value,
-            descriptor.EventType);
 
         using var scope = scopeFactory.CreateScope();
 
-        var handler = scope.ServiceProvider
-            .GetRequiredService(descriptor.HandlerType);
-
-        await ((dynamic)handler)
-            .HandleAsync((dynamic)message, ct);
+        await descriptor.InvokeAsync(
+            scope.ServiceProvider,
+            result.Message.Value,
+            ct);
     }
 }

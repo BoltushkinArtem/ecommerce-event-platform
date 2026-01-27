@@ -12,8 +12,6 @@ public static class KafkaHandlerServiceCollectionExtensions
         where TEvent : class
         where THandler : class, IMessageHandler<TEvent>
     {
-        services.AddScoped<IMessageHandler<TEvent>, THandler>();
-        
         services.Configure<KafkaHandlerRegistryOptions>(options =>
         {
             options.Handlers.Add(

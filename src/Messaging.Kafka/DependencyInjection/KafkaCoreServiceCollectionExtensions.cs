@@ -1,3 +1,4 @@
+using Messaging.Kafka.Attributes;
 using Messaging.Kafka.Configuration;
 using Messaging.Kafka.Serialization;
 using Messaging.Kafka.Topics;
@@ -19,6 +20,7 @@ public static class KafkaCoreServiceCollectionExtensions
         
         services.AddSingleton<IValidateOptions<KafkaOptions>, KafkaOptionsValidator>();
         services.AddSingleton<IKafkaMessageSerializer, KafkaMessageSerializer>();
+        services.AddSingleton<IEventContractKeyResolver, EventContractKeyResolver>();
         services.AddSingleton<IKafkaTopicResolver, KafkaTopicResolver>();
 
         return services;

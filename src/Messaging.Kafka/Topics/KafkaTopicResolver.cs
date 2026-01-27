@@ -1,3 +1,4 @@
+using Messaging.Kafka.Attributes;
 using Messaging.Kafka.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -8,13 +9,16 @@ public class KafkaTopicResolver : IKafkaTopicResolver
 {
     private readonly IReadOnlyDictionary<string, KafkaTopicDefinition> _topics;
     private readonly ILogger<KafkaTopicResolver> _logger;
+    private readonly IEventContractKeyResolver  _eventContractKeyResolver;
 
     public KafkaTopicResolver(
         IOptions<KafkaOptions> options,
-        ILogger<KafkaTopicResolver> logger)
+        ILogger<KafkaTopicResolver> logger,
+        IEventContractKeyResolver  eventContractKeyResolver)
     {
         _logger = logger;
-
+        _eventContractKeyResolver = eventContractKeyResolver;
+        
         _topics = options.Value.Topics.ToDictionary(
             t => t.Event,
             t => new KafkaTopicDefinition(t.Event, t.Name));
@@ -24,20 +28,18 @@ public class KafkaTopicResolver : IKafkaTopicResolver
             _topics.Select(x => $"{x.Key} -> {x.Value.Name}"));
     }
 
-    private string Resolve(string eventName)
+    public string Resolve<TEvent>() => Resolve(typeof(TEvent));
+
+    public string Resolve(Type eventType)
     {
-        if (_topics.TryGetValue(eventName, out var topic)) return topic.Name;
+        var eventKey = _eventContractKeyResolver.Resolve(eventType);
+        if (_topics.TryGetValue(eventKey, out var topic)) return topic.Name;
         _logger.LogError(
             "Kafka topic not configured for event {Event}. Available events: {Events}",
-            eventName,
+            eventKey,
             _topics.Keys);
 
         throw new InvalidOperationException(
-            $"Kafka topic not configured for event '{eventName}'.");
+            $"Kafka topic not configured for event '{eventKey}'.");
     }
-    
-
-    public string Resolve<TEvent>() => Resolve(typeof(TEvent).Name);
-    
-    public string Resolve(Type eventType)=> Resolve(eventType.Name);
 }

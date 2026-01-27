@@ -13,11 +13,6 @@ public static class KafkaHandlerServiceCollectionExtensions
         where THandler : class, IMessageHandler<TEvent>
     {
         services.AddScoped<IMessageHandler<TEvent>, THandler>();
-
-        // using var sp = services.BuildServiceProvider();
-        // var resolver = sp.GetRequiredService<IKafkaTopicResolver>();
-        //
-        // var topic = resolver.Resolve<TEvent>();
         
         services.Configure<KafkaHandlerRegistryOptions>(options =>
         {

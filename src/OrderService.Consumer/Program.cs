@@ -1,5 +1,4 @@
 ﻿using Messaging.Hosting.Kafka;
-using Messaging.Kafka.Configuration;
 using Messaging.Kafka.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

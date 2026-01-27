@@ -1,5 +1,4 @@
 using Confluent.Kafka;
-using Messaging.Abstractions;
 using Messaging.Kafka.Dispatching;
 using Messaging.Kafka.Factories;
 using Messaging.Kafka.Registry;

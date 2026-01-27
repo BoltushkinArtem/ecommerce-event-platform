@@ -1,6 +1,6 @@
-using Messaging.Abstractions;
 using Messaging.Kafka.Configuration;
 using Messaging.Kafka.Serialization;
+using Messaging.Kafka.Topics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -19,6 +19,7 @@ public static class KafkaCoreServiceCollectionExtensions
         
         services.AddSingleton<IValidateOptions<KafkaOptions>, KafkaOptionsValidator>();
         services.AddSingleton<IKafkaMessageSerializer, KafkaMessageSerializer>();
+        services.AddSingleton<IKafkaTopicResolver, KafkaTopicResolver>();
 
         return services;
     }

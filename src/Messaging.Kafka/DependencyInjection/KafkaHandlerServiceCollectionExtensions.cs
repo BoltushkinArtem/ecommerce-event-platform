@@ -1,6 +1,6 @@
 using Messaging.Abstractions;
+using Messaging.Kafka.Configuration;
 using Messaging.Kafka.Registry;
-using Messaging.Kafka.Topics;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Messaging.Kafka.DependencyInjection;
@@ -14,16 +14,15 @@ public static class KafkaHandlerServiceCollectionExtensions
     {
         services.AddScoped<IMessageHandler<TEvent>, THandler>();
 
-        using var sp = services.BuildServiceProvider();
-        var resolver = sp.GetRequiredService<IKafkaConsumerTopicResolver>();
-
-        var topic = resolver.Resolve<TEvent>();
+        // using var sp = services.BuildServiceProvider();
+        // var resolver = sp.GetRequiredService<IKafkaTopicResolver>();
+        //
+        // var topic = resolver.Resolve<TEvent>();
         
         services.Configure<KafkaHandlerRegistryOptions>(options =>
         {
             options.Handlers.Add(
-                new KafkaHandlerDescriptor(
-                    Topic: topic,
+                new KafkaHandlerOptions(
                     EventType: typeof(TEvent),
                     HandlerType: typeof(THandler)));
         });

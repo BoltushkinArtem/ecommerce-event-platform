@@ -14,7 +14,7 @@ public sealed class MessagePublisher(
     IKafkaProducerFactory producerFactory,
     IKafkaRetryPolicyFactory retryPolicyFactory,
     IKafkaMessageSerializer serializer,
-    IKafkaProducerTopicResolver kafkaProducerTopicResolver)
+    IKafkaTopicResolver kafkaTopicResolver)
     : IMessagePublisher, IAsyncDisposable
 {
     private static readonly ActivitySource ActivitySource =
@@ -29,7 +29,7 @@ public sealed class MessagePublisher(
         CancellationToken ct = default)
     {
         var eventType = typeof(T).Name;
-        var topic = kafkaProducerTopicResolver.Resolve<T>();
+        var topic = kafkaTopicResolver.Resolve<T>();
 
         using var activity = ActivitySource.StartActivity(
             "kafka.produce",

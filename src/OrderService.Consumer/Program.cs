@@ -29,7 +29,9 @@ try
                 builder.AddSerilog();
             });
             
-            services.AddKafkaMessaging(context.Configuration, KafkaMessagingMode.Consumer);
+            services.AddKafkaCoreMessaging(configuration);
+            services.AddKafkaConsumerMessaging(context.Configuration);
+            
             services.AddHostedService<KafkaConsumerHostedService>();
             services.AddKafkaHandler<OrderCreated, OrderCreatedHandler>();
         })

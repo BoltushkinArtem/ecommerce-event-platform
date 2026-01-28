@@ -1,4 +1,5 @@
 using Messaging.Kafka.Consumer;
+using Messaging.Kafka.Consumer.Pump;
 using Microsoft.Extensions.Hosting;
 
 namespace Messaging.Hosting.Kafka;

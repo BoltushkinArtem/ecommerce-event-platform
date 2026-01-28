@@ -1,9 +1,10 @@
 
 using Messaging.Abstractions;
-using Messaging.Kafka.Configuration;
-using Messaging.Kafka.Factories;
+using Messaging.Abstractions.Publishing;
+using Messaging.Kafka.Core.Configuration;
 using Messaging.Kafka.Producer;
-using Messaging.Kafka.Topics;
+using Messaging.Kafka.Producer.Factories;
+using Messaging.Kafka.Producer.Publishing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;

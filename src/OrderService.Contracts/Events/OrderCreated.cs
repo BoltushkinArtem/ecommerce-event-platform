@@ -1,4 +1,5 @@
 using Messaging.Abstractions;
+using Messaging.Abstractions.Contracts;
 
 namespace OrderService.Contracts.Events;
 

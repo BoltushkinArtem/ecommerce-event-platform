@@ -1,5 +1,5 @@
 ﻿using Messaging.Abstractions;
-using Messaging.Kafka.Configuration;
+using Messaging.Abstractions.Publishing;
 using Messaging.Kafka.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using OrderService.Contracts.Events;

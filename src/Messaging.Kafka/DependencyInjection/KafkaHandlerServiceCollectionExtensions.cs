@@ -1,6 +1,7 @@
 using Messaging.Abstractions;
-using Messaging.Kafka.Configuration;
-using Messaging.Kafka.Registry;
+using Messaging.Abstractions.Handlers;
+using Messaging.Kafka.Consumer.Registry;
+using Messaging.Kafka.Core.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Messaging.Kafka.DependencyInjection;

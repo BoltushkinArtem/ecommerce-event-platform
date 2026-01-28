@@ -1,7 +1,7 @@
-using Messaging.Kafka.Attributes;
-using Messaging.Kafka.Configuration;
-using Messaging.Kafka.Serialization;
-using Messaging.Kafka.Topics;
+using Messaging.Kafka.Core.Attributes;
+using Messaging.Kafka.Core.Configuration;
+using Messaging.Kafka.Core.Serialization;
+using Messaging.Kafka.Core.Topics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;

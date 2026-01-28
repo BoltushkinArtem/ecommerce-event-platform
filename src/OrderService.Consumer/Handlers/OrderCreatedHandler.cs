@@ -1,4 +1,5 @@
 using Messaging.Abstractions;
+using Messaging.Abstractions.Handlers;
 using Microsoft.Extensions.Logging;
 using OrderService.Contracts.Events;
 

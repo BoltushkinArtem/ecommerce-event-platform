@@ -1,8 +1,9 @@
-using Messaging.Kafka.Configuration;
 using Messaging.Kafka.Consumer;
-using Messaging.Kafka.Dispatching;
-using Messaging.Kafka.Factories;
-using Messaging.Kafka.Registry;
+using Messaging.Kafka.Consumer.Dispatching;
+using Messaging.Kafka.Consumer.Factories;
+using Messaging.Kafka.Consumer.Pump;
+using Messaging.Kafka.Consumer.Registry;
+using Messaging.Kafka.Core.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;

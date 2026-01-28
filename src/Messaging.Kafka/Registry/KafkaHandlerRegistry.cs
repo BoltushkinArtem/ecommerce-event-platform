@@ -22,6 +22,13 @@ public sealed class KafkaHandlerRegistry : IKafkaHandlerRegistry
         foreach (var h in options.Value.Handlers)
         {
             var topic = topicResolver.Resolve(h.EventType);
+            
+            if (_byTopic.ContainsKey(topic))
+            {
+                throw new InvalidOperationException(
+                    $"Duplicate Kafka handler registration detected for topic '{topic}'. " +
+                    $"Each Kafka topic must be handled by exactly one handler.");
+            }
 
             var descriptor = BuildDescriptor(
                 topic,
@@ -34,7 +41,16 @@ public sealed class KafkaHandlerRegistry : IKafkaHandlerRegistry
     }
 
     public KafkaHandlerDescriptor GetDescriptor(string topic)
-        => _byTopic[topic];
+    {
+        if (!_byTopic.TryGetValue(topic, out var descriptor))
+        {
+            throw new InvalidOperationException(
+                $"No Kafka handler registered for topic '{topic}'. " +
+                $"Available topics: {string.Join(", ", _byTopic.Keys)}");
+        }
+
+        return descriptor;
+    }
 
     public IReadOnlyCollection<string> Topics => _byTopic.Keys;
     
@@ -68,6 +84,12 @@ public sealed class KafkaHandlerRegistry : IKafkaHandlerRegistry
         var handleMethod = handlerType.GetMethod(
             nameof(IMessageHandler<object>.HandleAsync),
             new[] { eventType, typeof(CancellationToken) })!;
+        
+        if (handleMethod is null)
+        {
+            throw new InvalidOperationException(
+                $"Handler '{handlerType.Name}' does not implement IMessageHandler<{eventType.Name}>.");
+        }
 
         var handleCall = Expression.Call(
             getHandlerCall,

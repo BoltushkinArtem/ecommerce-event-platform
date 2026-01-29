@@ -1,6 +1,6 @@
 using Confluent.Kafka;
+using Messaging.Kafka.Consumer.Invocation;
 using Messaging.Kafka.Consumer.Registry;
-using Messaging.Kafka.Core.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Messaging.Kafka.Consumer.Dispatching;
@@ -8,7 +8,7 @@ namespace Messaging.Kafka.Consumer.Dispatching;
 public sealed class KafkaMessageDispatcher(
     IServiceScopeFactory scopeFactory,
     IKafkaHandlerRegistry registry,
-    IKafkaMessageSerializer serializer)
+    IKafkaHandlerInvoker invoker)
     : IKafkaMessageDispatcher
 {
     public async Task DispatchAsync(
@@ -19,8 +19,10 @@ public sealed class KafkaMessageDispatcher(
 
         using var scope = scopeFactory.CreateScope();
 
-        await descriptor.InvokeAsync(
+        await invoker.InvokeAsync(
             scope.ServiceProvider,
+            descriptor.EventType,
+            descriptor.HandlerType,
             result.Message.Value,
             ct);
     }

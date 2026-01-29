@@ -19,24 +19,22 @@ public sealed class KafkaHandlerRegistry : IKafkaHandlerRegistry
         _byTopic = new Dictionary<string, KafkaHandlerDescriptor>(
             options.Value.Handlers.Count);
 
-        foreach (var h in options.Value.Handlers)
+        foreach (var handler  in options.Value.Handlers)
         {
-            var topic = topicResolver.Resolve(h.EventType);
-            
+            var topic = topicResolver.Resolve(handler.EventType);
+
             if (_byTopic.ContainsKey(topic))
             {
                 throw new InvalidOperationException(
-                    $"Duplicate Kafka handler registration detected for topic '{topic}'. " +
-                    $"Each Kafka topic must be handled by exactly one handler.");
+                    $"Duplicate Kafka handler for topic '{topic}'. Each topic must have exactly one handler.");
             }
 
-            var descriptor = BuildDescriptor(
+            _byTopic.Add(
                 topic,
-                h.EventType,
-                h.HandlerType,
-                serializer);
-
-            _byTopic.Add(topic, descriptor);
+                new KafkaHandlerDescriptor(
+                    Topic: topic,
+                    EventType: handler.EventType,
+                    HandlerType: handler.HandlerType));
         }
     }
 
@@ -53,59 +51,4 @@ public sealed class KafkaHandlerRegistry : IKafkaHandlerRegistry
     }
 
     public IReadOnlyCollection<string> Topics => _byTopic.Keys;
-    
-    private static KafkaHandlerDescriptor BuildDescriptor(
-        string topic,
-        Type eventType,
-        Type handlerType,
-        IKafkaMessageSerializer serializer)
-    {
-        // parameters
-        var spParam = Expression.Parameter(typeof(IServiceProvider), "sp");
-        var payloadParam = Expression.Parameter(typeof(string), "payload");
-        var ctParam = Expression.Parameter(typeof(CancellationToken), "ct");
-
-        // serializer.Deserialize(payload, eventType)
-        var deserializeCall = Expression.Call(
-            Expression.Constant(serializer),
-            nameof(IKafkaMessageSerializer.Deserialize),
-            Type.EmptyTypes,
-            payloadParam,
-            Expression.Constant(eventType));
-
-        // sp.GetRequiredService<THandler>()
-        var getHandlerCall = Expression.Call(
-            typeof(ServiceProviderServiceExtensions),
-            nameof(ServiceProviderServiceExtensions.GetRequiredService),
-            new[] { handlerType },
-            spParam);
-
-        // handler.HandleAsync((TEvent)message, ct)
-        var handleMethod = handlerType.GetMethod(
-            nameof(IMessageHandler<object>.HandleAsync),
-            new[] { eventType, typeof(CancellationToken) })!;
-        
-        if (handleMethod is null)
-        {
-            throw new InvalidOperationException(
-                $"Handler '{handlerType.Name}' does not implement IMessageHandler<{eventType.Name}>.");
-        }
-
-        var handleCall = Expression.Call(
-            getHandlerCall,
-            handleMethod,
-            Expression.Convert(deserializeCall, eventType),
-            ctParam);
-
-        var lambda = Expression.Lambda<
-            Func<IServiceProvider, string, CancellationToken, Task>>(
-            handleCall,
-            spParam,
-            payloadParam,
-            ctParam);
-
-        return new KafkaHandlerDescriptor(
-            topic,
-            lambda.Compile());
-    }
 }

@@ -20,7 +20,7 @@ public static class KafkaCoreServiceCollectionExtensions
         
         services.AddSingleton<IValidateOptions<KafkaOptions>, KafkaOptionsValidator>();
         services.AddSingleton<IKafkaMessageSerializer, KafkaMessageSerializer>();
-        services.AddSingleton<IEventContractKeyResolver, EventContractKeyResolver>();
+        services.AddSingleton<IEventKeyResolver, EventKeyResolver>();
         services.AddSingleton<IKafkaTopicResolver, KafkaTopicResolver>();
 
         return services;

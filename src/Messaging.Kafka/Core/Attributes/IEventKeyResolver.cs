@@ -1,6 +1,6 @@
 namespace Messaging.Kafka.Core.Attributes;
 
-public interface IEventContractKeyResolver
+public interface IEventKeyResolver
 {
     string Resolve<TEvent>();
     string Resolve(Type eventType);

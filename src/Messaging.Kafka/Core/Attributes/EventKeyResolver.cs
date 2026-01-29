@@ -1,14 +1,14 @@
 using System.Reflection;
-using Messaging.Abstractions.Contracts;
+using Messaging.Abstractions.Messages;
 
 namespace Messaging.Kafka.Core.Attributes;
 
-public class EventContractKeyResolver: IEventContractKeyResolver
+public class EventKeyResolver: IEventKeyResolver
 {
     public string Resolve<TEvent>() => Resolve(typeof(TEvent));
 
     public string Resolve(Type eventType)
-        => eventType.GetCustomAttribute<EventContractAttribute>()?.Key
+        => eventType.GetCustomAttribute<EventKeyAttribute>()?.Value
            ?? throw new InvalidOperationException(
                $"EventContractKeyResolver not found on {eventType.FullName}");
 }

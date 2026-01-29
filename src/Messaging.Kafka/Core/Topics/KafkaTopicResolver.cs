@@ -9,15 +9,15 @@ public class KafkaTopicResolver : IKafkaTopicResolver
 {
     private readonly IReadOnlyDictionary<string, KafkaTopicDefinition> _topics;
     private readonly ILogger<KafkaTopicResolver> _logger;
-    private readonly IEventContractKeyResolver  _eventContractKeyResolver;
+    private readonly IEventKeyResolver  _eventKeyResolver;
 
     public KafkaTopicResolver(
         IOptions<KafkaOptions> options,
         ILogger<KafkaTopicResolver> logger,
-        IEventContractKeyResolver  eventContractKeyResolver)
+        IEventKeyResolver  eventKeyResolver)
     {
         _logger = logger;
-        _eventContractKeyResolver = eventContractKeyResolver;
+        _eventKeyResolver = eventKeyResolver;
         
         _topics = options.Value.Topics.ToDictionary(
             t => t.Event,
@@ -32,7 +32,7 @@ public class KafkaTopicResolver : IKafkaTopicResolver
 
     public string Resolve(Type eventType)
     {
-        var eventKey = _eventContractKeyResolver.Resolve(eventType);
+        var eventKey = _eventKeyResolver.Resolve(eventType);
         if (_topics.TryGetValue(eventKey, out var topic)) return topic.Name;
         _logger.LogError(
             "Kafka topic not configured for event {Event}. Available events: {Events}",

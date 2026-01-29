@@ -1,9 +1,8 @@
-using Messaging.Abstractions;
-using Messaging.Abstractions.Contracts;
+using Messaging.Abstractions.Messages;
 
 namespace OrderService.Contracts.Events;
 
-[EventContract("OrderCreated")]
+[EventKey("OrderCreated")]
 public class OrderCreated(Guid orderId, Guid customerId, decimal totalAmount, DateTime createdAt)
 {
     public Guid OrderId { get; init; } = orderId;

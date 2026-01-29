@@ -20,8 +20,8 @@ public class KafkaTopicResolver : IKafkaTopicResolver
         _eventKeyResolver = eventKeyResolver;
         
         _topics = options.Value.Topics.ToDictionary(
-            t => t.Event,
-            t => new KafkaTopicDefinition(t.Event, t.Name));
+            t => t.EventKey,
+            t => new KafkaTopicDefinition(t.EventKey, t.Name));
 
         _logger.LogInformation(
             "Kafka topic resolver initialized. Events -> Topics: {Topics}",

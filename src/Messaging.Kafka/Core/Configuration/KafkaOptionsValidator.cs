@@ -68,7 +68,7 @@ public sealed class KafkaOptionsValidator
         }
 
         var duplicateEvents = topics
-            .GroupBy(t => t.Event)
+            .GroupBy(t => t.EventKey)
             .Where(g => g.Count() > 1)
             .Select(g => g.Key)
             .ToArray();
@@ -81,7 +81,7 @@ public sealed class KafkaOptionsValidator
 
         foreach (var topic in topics)
         {
-            if (string.IsNullOrWhiteSpace(topic.Event))
+            if (string.IsNullOrWhiteSpace(topic.EventKey))
             {
                 failures.Add("Kafka:Topics[].Event must be specified.");
             }
@@ -89,7 +89,7 @@ public sealed class KafkaOptionsValidator
             if (string.IsNullOrWhiteSpace(topic.Name))
             {
                 failures.Add(
-                    $"Kafka:Topics[].Name must be specified for event '{topic.Event}'.");
+                    $"Kafka:Topics[].Name must be specified for event '{topic.EventKey}'.");
             }
         }
     }

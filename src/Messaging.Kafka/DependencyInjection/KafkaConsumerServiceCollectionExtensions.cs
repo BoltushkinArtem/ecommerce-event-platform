@@ -1,10 +1,11 @@
-using Messaging.Kafka.Consumer;
+using Messaging.Abstractions.Runtime;
 using Messaging.Kafka.Consumer.Dispatching;
 using Messaging.Kafka.Consumer.Factories;
 using Messaging.Kafka.Consumer.Invocation;
 using Messaging.Kafka.Consumer.Pump;
 using Messaging.Kafka.Consumer.Registry;
 using Messaging.Kafka.Core.Configuration;
+using Messaging.Kafka.Runtime;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -27,6 +28,7 @@ public static class KafkaConsumerServiceCollectionExtensions
         services.AddSingleton<IKafkaHandlerInvoker, KafkaHandlerInvoker>();
         services.AddSingleton<IKafkaMessageDispatcher, KafkaMessageDispatcher>();
         services.AddSingleton<IKafkaMessagePump, KafkaMessagePump>();
+        services.AddSingleton<IMessageWorker, KafkaMessageWorker>();
 
         return services;
     }

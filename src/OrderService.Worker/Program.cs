@@ -1,5 +1,5 @@
-using Messaging.Hosting.Kafka;
 using Messaging.Kafka.DependencyInjection;
+using Messaging.Runtime.Hosting.DependencyInjection;
 using OrderService.Contracts.Events;
 using OrderService.Worker.Handlers;
 using Serilog;
@@ -17,7 +17,7 @@ builder.Services.AddKafkaCoreMessaging(builder.Configuration);
 builder.Services.AddKafkaConsumerMessaging(builder.Configuration);
 
 builder.Services.AddKafkaHandler<OrderCreated, OrderCreatedHandler>();
-builder.Services.AddHostedService<KafkaConsumerHostedService>();
+builder.Services.AddMessageWorkerHostedRuntime();
 
 var host = builder.Build();
 

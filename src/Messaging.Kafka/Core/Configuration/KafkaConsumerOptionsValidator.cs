@@ -10,6 +10,11 @@ public sealed class KafkaConsumerOptionsValidator: IValidateOptions<KafkaConsume
     {
         var failures = new List<string>();
         
+        if (string.IsNullOrWhiteSpace(options.GroupId))
+        {
+            failures.Add("KafkaConsumerOptions: GroupId is required and cannot be empty.");
+        }
+        
         return failures.Count > 0
             ? ValidateOptionsResult.Fail(failures)
             : ValidateOptionsResult.Success;

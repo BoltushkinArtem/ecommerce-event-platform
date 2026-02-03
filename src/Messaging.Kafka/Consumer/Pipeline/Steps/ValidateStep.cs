@@ -11,8 +11,7 @@ public sealed class ValidateStep(
         CancellationToken ct)
     {
         if (context.Message is not null) return Task.FromResult(context);
-        
         logger.LogError("Validation failed: Message is null");
-        return Task.FromResult(context with { Exception = new InvalidOperationException("Message is null") });
+        throw new InvalidOperationException("Message is null");
     }
 }

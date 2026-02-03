@@ -9,43 +9,36 @@ public sealed class KafkaPipeline(
     ILogger<KafkaPipeline> logger)
     : IKafkaPipeline
 {
-    private readonly IReadOnlyList<IKafkaPipelineStep> _steps = steps.ToList();
+    private readonly IReadOnlyList<IKafkaPipelineStep> _steps =
+        steps.ToList();
 
-    public async Task<PipelineExecutionResult> ExecuteAsync(
+    public async Task<KafkaProcessingResult> ExecuteAsync(
         ConsumeResult<string, string> result,
         CancellationToken ct)
     {
-        KafkaConsumeContext context = new(result,null, null,null,false);
+        KafkaConsumeContext context = new(
+            ConsumeResult: result,
+            Message: null!,
+            MessageType: null!);
 
-        foreach (var step in _steps)
+        try
         {
-            try
+            foreach (var step in _steps)
             {
                 context = await step.ExecuteAsync(context, ct);
-
-                if (context.Exception is not null)
-                {
-                    logger.LogWarning(
-                        "Pipeline interrupted at step {Step}",
-                        step.GetType().Name);
-
-                    return PipelineExecutionResult.Failure(context.Exception);
-                }
             }
-            catch (Exception ex)
-            {
-                logger.LogError(
-                    ex,
-                    "Unhandled exception in pipeline step {Step}",
-                    step.GetType().Name);
 
-                return PipelineExecutionResult.Failure(ex);
-            }
+            return KafkaProcessingResult.Ok();
         }
+        catch (Exception ex)
+        {
+            logger.LogError(
+                ex,
+                "Kafka pipeline execution failed. Topic={Topic}, Offset={Offset}",
+                result.Topic,
+                result.Offset.Value);
 
-        return context.IsHandled
-            ? PipelineExecutionResult.Success()
-            : PipelineExecutionResult.Failure(
-                new InvalidOperationException("Message was not handled"));
+            return KafkaProcessingResult.Fail(ex);
+        }
     }
 }

@@ -5,7 +5,5 @@ namespace Messaging.Kafka.Consumer.Pipeline;
 public record KafkaConsumeContext(
     ConsumeResult<string, string> ConsumeResult,
     object? Message,
-    Type? MessageType,
-    Exception? Exception,
-    bool IsHandled
+    Type? MessageType
 );

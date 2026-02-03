@@ -4,7 +4,7 @@ namespace Messaging.Kafka.Consumer.Pipeline;
 
 public interface IKafkaPipeline
 {
-    Task<PipelineExecutionResult> ExecuteAsync(
+    Task<KafkaProcessingResult> ExecuteAsync(
         ConsumeResult<string, string> result,
         CancellationToken ct);
 }

@@ -47,10 +47,6 @@ public sealed class HandleStep(
             context.Message!,
             ct);
 
-        return await Task.FromResult(
-            context with
-            {
-                IsHandled = true
-            });
+        return await Task.FromResult(context);
     }
 }

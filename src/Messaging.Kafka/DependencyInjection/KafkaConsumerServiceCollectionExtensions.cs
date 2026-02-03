@@ -32,7 +32,6 @@ public static class KafkaConsumerServiceCollectionExtensions
         services.AddSingleton<IKafkaPipelineStep, DeserializeStep>();
         services.AddSingleton<IKafkaPipelineStep, ValidateStep>();
         services.AddSingleton<IKafkaPipelineStep, HandleStep>();
-        services.AddSingleton<IKafkaPipelineStep, RetryStep>();
         
         services.AddSingleton<IKafkaMessagePump, KafkaMessagePump>();
         services.AddSingleton<IMessageWorker, KafkaMessageWorker>();

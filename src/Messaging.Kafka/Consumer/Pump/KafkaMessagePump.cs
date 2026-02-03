@@ -30,7 +30,7 @@ public sealed class KafkaMessagePump(
                 var executionResult =
                     await pipeline.ExecuteAsync(result, ct);
 
-                if (executionResult.IsHandled)
+                if (executionResult.Success)
                 {
                     _consumer.Commit(result);
 

@@ -1,8 +1,4 @@
-using System.Linq.Expressions;
-using Messaging.Abstractions.Handlers;
-using Messaging.Kafka.Core.Serialization;
 using Messaging.Kafka.Core.Topics;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace Messaging.Kafka.Consumer.Registry;
@@ -13,8 +9,7 @@ public sealed class KafkaHandlerRegistry : IKafkaHandlerRegistry
 
     public KafkaHandlerRegistry(
         IOptions<KafkaHandlerRegistryOptions> options,
-        IKafkaTopicResolver topicResolver,
-        IKafkaMessageSerializer serializer)
+        IKafkaTopicResolver topicResolver)
     {
         _byTopic = new Dictionary<string, KafkaHandlerDescriptor>(
             options.Value.Handlers.Count);

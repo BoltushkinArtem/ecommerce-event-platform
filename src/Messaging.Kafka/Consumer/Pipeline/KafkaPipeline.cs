@@ -28,17 +28,17 @@ public sealed class KafkaPipeline(
                 context = await step.ExecuteAsync(context, ct);
             }
 
-            return KafkaProcessingResult.Ok();
+            return KafkaProcessingResult.Commit();
+        }
+        catch (InvalidOperationException ex)
+        {
+            logger.LogWarning(ex, "Validation error");
+            return KafkaProcessingResult.Skip(ex);
         }
         catch (Exception ex)
         {
-            logger.LogError(
-                ex,
-                "Kafka pipeline execution failed. Topic={Topic}, Offset={Offset}",
-                result.Topic,
-                result.Offset.Value);
-
-            return KafkaProcessingResult.Fail(ex);
+            logger.LogError(ex, "Unhandled processing error");
+            return KafkaProcessingResult.Retry(ex);
         }
     }
 }

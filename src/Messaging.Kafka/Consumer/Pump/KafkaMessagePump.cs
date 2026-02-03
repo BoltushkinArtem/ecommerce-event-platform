@@ -1,4 +1,3 @@
-using Confluent.Kafka;
 using Messaging.Kafka.Consumer.Factories;
 using Messaging.Kafka.Consumer.Pipeline;
 using Messaging.Kafka.Consumer.Registry;
@@ -13,38 +12,44 @@ public sealed class KafkaMessagePump(
     ILogger<KafkaMessagePump> logger)
     : IKafkaMessagePump
 {
-    private readonly IConsumer<string, string> _consumer =
-        consumerFactory.Create();
-
     public async Task RunAsync(CancellationToken ct)
     {
-        _consumer.Subscribe(registry.Topics);
+        using var consumer = consumerFactory.Create();
+
+        
+        consumer.Subscribe(registry.Topics);
 
         try
         {
             while (!ct.IsCancellationRequested)
             {
-                var result = _consumer.Consume(ct);
+                var result = consumer.Consume(ct);
                 if (result is null) continue;
                 
-                var executionResult =
-                    await pipeline.ExecuteAsync(result, ct);
+                var outcome = await pipeline.ExecuteAsync(result, ct);
 
-                if (executionResult.Success)
+                switch (outcome.Decision)
                 {
-                    _consumer.Commit(result);
+                    case KafkaCommitDecision.Commit:
+                        consumer.Commit(result);
+                        logger.LogInformation(
+                            "Committed offset. Topic={Topic}, Offset={Offset}",
+                            result.Topic, result.Offset.Value);
+                        break;
 
-                    logger.LogInformation(
-                        "Offset committed. Topic={Topic}, Offset={Offset}",
-                        result.Topic,
-                        result.Offset.Value);
-                }
-                else
-                {
-                    logger.LogWarning(
-                        "Message not committed due to failure. Topic={Topic}, Offset={Offset}",
-                        result.Topic,
-                        result.Offset.Value);
+                    case KafkaCommitDecision.Skip:
+                        logger.LogWarning(
+                            "Skipping commit. Topic={Topic}, Offset={Offset}",
+                            result.Topic, result.Offset.Value);
+                        break;
+
+                    case KafkaCommitDecision.Retry:
+                        logger.LogWarning(
+                            "Retry requested. Topic={Topic}, Offset={Offset}",
+                            result.Topic, result.Offset.Value);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
         }
@@ -61,7 +66,7 @@ public sealed class KafkaMessagePump(
         {
             try
             {
-                _consumer.Close();
+                consumer.Close();
             }
             catch (Exception ex)
             {

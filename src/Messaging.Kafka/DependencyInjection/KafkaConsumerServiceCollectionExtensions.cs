@@ -1,7 +1,7 @@
 using Messaging.Abstractions.Runtime;
-using Messaging.Kafka.Consumer.Dispatching;
 using Messaging.Kafka.Consumer.Factories;
-using Messaging.Kafka.Consumer.Invocation;
+using Messaging.Kafka.Consumer.Pipeline;
+using Messaging.Kafka.Consumer.Pipeline.Steps;
 using Messaging.Kafka.Consumer.Pump;
 using Messaging.Kafka.Consumer.Registry;
 using Messaging.Kafka.Core.Configuration;
@@ -25,8 +25,14 @@ public static class KafkaConsumerServiceCollectionExtensions
         services.AddSingleton<IValidateOptions<KafkaConsumerOptions>, KafkaConsumerOptionsValidator>();
         services.AddSingleton<IKafkaConsumerFactory, KafkaConsumerFactory>();
         services.AddSingleton<IKafkaHandlerRegistry, KafkaHandlerRegistry>();
-        services.AddSingleton<IKafkaHandlerInvoker, KafkaHandlerInvoker>();
-        services.AddSingleton<IKafkaMessageDispatcher, KafkaMessageDispatcher>();
+        
+        services.AddSingleton<IKafkaPipeline, KafkaPipeline>();
+
+        services.AddSingleton<IKafkaPipelineStep, DeserializeStep>();
+        services.AddSingleton<IKafkaPipelineStep, ValidateStep>();
+        services.AddSingleton<IKafkaPipelineStep, HandleStep>();
+        services.AddSingleton<IKafkaPipelineStep, RetryStep>();
+        
         services.AddSingleton<IKafkaMessagePump, KafkaMessagePump>();
         services.AddSingleton<IMessageWorker, KafkaMessageWorker>();
 

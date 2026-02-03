@@ -1,6 +1,6 @@
 using Confluent.Kafka;
-using Messaging.Kafka.Consumer.Dispatching;
 using Messaging.Kafka.Consumer.Factories;
+using Messaging.Kafka.Consumer.Pipeline;
 using Messaging.Kafka.Consumer.Registry;
 using Microsoft.Extensions.Logging;
 
@@ -9,7 +9,7 @@ namespace Messaging.Kafka.Consumer.Pump;
 public sealed class KafkaMessagePump(
     IKafkaConsumerFactory consumerFactory,
     IKafkaHandlerRegistry registry,
-    IKafkaMessageDispatcher dispatcher,
+    IKafkaPipeline pipeline,
     ILogger<KafkaMessagePump> logger)
     : IKafkaMessagePump
 {
@@ -26,9 +26,26 @@ public sealed class KafkaMessagePump(
             {
                 var result = _consumer.Consume(ct);
                 if (result is null) continue;
+                
+                var executionResult =
+                    await pipeline.ExecuteAsync(result, ct);
 
-                await dispatcher.DispatchAsync(result, ct);
-                _consumer.Commit(result);
+                if (executionResult.IsHandled)
+                {
+                    _consumer.Commit(result);
+
+                    logger.LogInformation(
+                        "Offset committed. Topic={Topic}, Offset={Offset}",
+                        result.Topic,
+                        result.Offset.Value);
+                }
+                else
+                {
+                    logger.LogWarning(
+                        "Message not committed due to failure. Topic={Topic}, Offset={Offset}",
+                        result.Topic,
+                        result.Offset.Value);
+                }
             }
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)

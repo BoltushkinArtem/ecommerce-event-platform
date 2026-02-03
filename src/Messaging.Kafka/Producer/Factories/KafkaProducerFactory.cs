@@ -1,26 +1,18 @@
 using Confluent.Kafka;
-using Messaging.Kafka.Configuration;
+using Messaging.Kafka.Core.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Messaging.Kafka.Producer.Factories;
 
-public sealed class KafkaProducerFactory
+public sealed class KafkaProducerFactory(
+    IOptions<KafkaOptions> kafkaOptions,
+    IOptions<KafkaProducerOptions> producerOptions,
+    ILogger<KafkaProducerFactory> logger)
     : IKafkaProducerFactory
 {
-    private readonly KafkaOptions _kafkaOptions;
-    private readonly KafkaProducerOptions _producerOptions;
-    private readonly ILogger<KafkaProducerFactory> _logger;
-
-    public KafkaProducerFactory(
-        IOptions<KafkaOptions> kafkaOptions,
-        IOptions<KafkaProducerOptions> producerOptions,
-        ILogger<KafkaProducerFactory> logger)
-    {
-        _kafkaOptions = kafkaOptions.Value;
-        _producerOptions = producerOptions.Value;
-        _logger = logger;
-    }
+    private readonly KafkaOptions _kafkaOptions = kafkaOptions.Value;
+    private readonly KafkaProducerOptions _producerOptions = producerOptions.Value;
 
     public IProducer<string, string> Create()
     {
@@ -31,7 +23,7 @@ public sealed class KafkaProducerFactory
             EnableIdempotence = _producerOptions.EnableIdempotence
         };
 
-        _logger.LogInformation(
+        logger.LogInformation(
             "Creating Kafka ProducerConfig. BootstrapServers={Servers}, Acks={Acks}, Idempotence={Idempotence}",
             _kafkaOptions.BootstrapServers,
             _producerOptions.Acks,

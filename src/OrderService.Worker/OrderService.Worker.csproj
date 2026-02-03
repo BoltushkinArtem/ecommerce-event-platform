@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>dotnet-OrderService.Worker-c5e9f586-4be2-4762-9d18-6af2302b979d</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.2" />
+        <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
+        <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.0" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Messaging.Kafka\Messaging.Kafka.csproj" />
+      <ProjectReference Include="..\Messaging.Runtime.Hosting\Messaging.Runtime.Hosting.csproj" />
+      <ProjectReference Include="..\OrderService.Contracts\OrderService.Contracts.csproj" />
+    </ItemGroup>
+</Project>

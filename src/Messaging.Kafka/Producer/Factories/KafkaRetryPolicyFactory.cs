@@ -1,18 +1,13 @@
 using Confluent.Kafka;
-using Messaging.Kafka.Configuration;
+using Messaging.Kafka.Core.Configuration;
 using Microsoft.Extensions.Options;
 using Polly;
 
 namespace Messaging.Kafka.Producer.Factories;
 
-public sealed class KafkaRetryPolicyFactory : IKafkaRetryPolicyFactory
+public sealed class KafkaRetryPolicyFactory(IOptions<KafkaOptions> options) : IKafkaRetryPolicyFactory
 {
-    private readonly KafkaRetryOptions _options;
-
-    public KafkaRetryPolicyFactory(IOptions<KafkaOptions> options)
-    {
-        _options = options.Value.Retry;
-    }
+    private readonly KafkaRetryOptions _options = options.Value.Retry;
 
     public IAsyncPolicy Create()
     {

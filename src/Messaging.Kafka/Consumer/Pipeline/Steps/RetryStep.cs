@@ -6,8 +6,8 @@ public sealed class RetryStep(
     ILogger<RetryStep> logger)
     : IKafkaPipelineStep
 {
-    public Task ExecuteAsync(
-        KafkaMessageContext context,
+    public Task<KafkaConsumeContext> ExecuteAsync(
+        KafkaConsumeContext context,
         CancellationToken ct)
     {
         if (context.Exception is not null)
@@ -18,6 +18,6 @@ public sealed class RetryStep(
                 context.ConsumeResult.Offset.Value);
         }
 
-        return Task.CompletedTask;
+        return Task.FromResult(context);
     }
 }

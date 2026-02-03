@@ -10,8 +10,8 @@ public sealed class DeserializeStep(
     ILogger<DeserializeStep> logger)
     : IKafkaPipelineStep
 {
-    public Task ExecuteAsync(
-        KafkaMessageContext context,
+    public Task<KafkaConsumeContext> ExecuteAsync(
+        KafkaConsumeContext context,
         CancellationToken ct)
     {
         var topic = context.ConsumeResult.Topic;
@@ -21,12 +21,14 @@ public sealed class DeserializeStep(
             "Deserializing message. Topic={Topic}, EventType={EventType}",
             topic,
             descriptor.EventType.Name);
-
-        context.MessageType = descriptor.EventType;
-        context.Message = serializer.Deserialize(
-            context.ConsumeResult.Message.Value,
-            descriptor.EventType);
-
-        return Task.CompletedTask;
+        
+        return Task.FromResult(
+            context with
+            {
+                Message = serializer.Deserialize(
+                    context.ConsumeResult.Message.Value,
+                    descriptor.EventType),
+                MessageType = descriptor.EventType
+            });
     }
 }

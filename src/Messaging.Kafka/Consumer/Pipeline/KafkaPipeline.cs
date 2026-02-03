@@ -15,16 +15,13 @@ public sealed class KafkaPipeline(
         ConsumeResult<string, string> result,
         CancellationToken ct)
     {
-        var context = new KafkaMessageContext
-        {
-            ConsumeResult = result
-        };
+        KafkaConsumeContext context = new(result,null, null,null,false);
 
         foreach (var step in _steps)
         {
             try
             {
-                await step.ExecuteAsync(context, ct);
+                context = await step.ExecuteAsync(context, ct);
 
                 if (context.Exception is not null)
                 {

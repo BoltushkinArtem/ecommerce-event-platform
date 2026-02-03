@@ -10,8 +10,8 @@ public sealed class HandleStep(
     ILogger<HandleStep> logger)
     : IKafkaPipelineStep
 {
-    public async Task ExecuteAsync(
-        KafkaMessageContext context,
+    public async Task<KafkaConsumeContext> ExecuteAsync(
+        KafkaConsumeContext context,
         CancellationToken ct)
     {
         var descriptor = registry.GetDescriptor(
@@ -41,6 +41,10 @@ public sealed class HandleStep(
             (dynamic)context.Message!,
             ct);
 
-        context.IsHandled = true;
+        return await Task.FromResult(
+            context with
+            {
+                IsHandled = true
+            });
     }
 }

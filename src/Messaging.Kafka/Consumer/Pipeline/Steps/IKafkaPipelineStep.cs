@@ -2,7 +2,7 @@ namespace Messaging.Kafka.Consumer.Pipeline.Steps;
 
 public interface IKafkaPipelineStep
 {
-    Task ExecuteAsync(
-        KafkaMessageContext context,
+    Task<KafkaConsumeContext> ExecuteAsync(
+        KafkaConsumeContext context,
         CancellationToken ct);
 }

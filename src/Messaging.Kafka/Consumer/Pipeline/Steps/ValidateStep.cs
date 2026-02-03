@@ -6,14 +6,13 @@ public sealed class ValidateStep(
     ILogger<ValidateStep> logger)
     : IKafkaPipelineStep
 {
-    public Task ExecuteAsync(
-        KafkaMessageContext context,
+    public Task<KafkaConsumeContext> ExecuteAsync(
+        KafkaConsumeContext context,
         CancellationToken ct)
     {
-        if (context.Message is not null) return Task.CompletedTask;
-        context.Exception = new InvalidOperationException("Message is null");
+        if (context.Message is not null) return Task.FromResult(context);
+        
         logger.LogError("Validation failed: Message is null");
-
-        return Task.CompletedTask;
+        return Task.FromResult(context with { Exception = new InvalidOperationException("Message is null") });
     }
 }

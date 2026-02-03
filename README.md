@@ -1,35 +1,28 @@
-# E-Commerce Event Platform
+# E-Commerce Event Platform — Lightweight Kafka Project
 
-A production-grade, event-driven e-commerce platform built with **.NET** and **Apache Kafka**,
-designed to demonstrate reliable messaging, clean architecture, and scalable integration patterns.
+**A simple and lightweight .NET project for working with Apache Kafka**, designed for developers who value **clarity, control, and minimal complexity**.  
 
-This repository focuses on **Kafka-based messaging infrastructure**, implemented as reusable building blocks and integrated into a real business domain.
-
----
-
-## Overview
-
-The **E-Commerce Event Platform** is an event-driven system where core business domains
-(orders, payments, delivery, analytics) communicate exclusively through Kafka events.
-
-The project emphasizes:
-
-* clean separation of **business logic** and **messaging infrastructure**
-* production-ready Kafka configuration
-* explicit abstractions and extension points
-* maintainability and scalability
+> Forget heavy, opinionated frameworks. This is Kafka **without the magic**.
 
 ---
 
-## Architecture Principles
+## Why Use It?
 
-* **Event-Driven Architecture**
-* **Infrastructure as Building Blocks**
-* **Explicit contracts between services**
-* **No framework leakage into domain logic**
-* **Configuration-driven behavior**
+* ✅ **Lightweight and modular** — use only what you need  
+* ✅ **Transparent pipelines** — easy to debug and extend  
+* ✅ **Domain-first design** — Kafka stays infrastructure, not a framework  
+* ✅ **Production-ready building blocks** — retries, idempotency, topic management  
+* ✅ **Easy customization** — swap serializers, handlers, or topics in seconds  
 
-Kafka is treated as **infrastructure**, not as application code.
+> Compared to MassTransit: fewer abstractions, less hidden logic, and full control over your messaging.
+
+---
+
+## Core Concepts
+
+* **Messaging.Abstractions** — interfaces for publishing messages, handlers, and workers  
+* **Messaging.Kafka** — Kafka implementation with pipelines, retry policies, and topic management  
+* **Messaging.Runtime.Hosting** — background worker hosting for clean integration  
 
 ---
 
@@ -39,332 +32,175 @@ Kafka is treated as **infrastructure**, not as application code.
 ecommerce-event-platform/
 ├── docker/
 │   └── docker-compose.yml
-│
+├── src/
+│   ├── Messaging.Abstractions/        # Core interfaces & contracts
+│   ├── Messaging.Kafka/               # Kafka implementation
+│   ├── Messaging.Runtime.Hosting/     # Worker hosting
+│   ├── OrderService.Contracts/        # Domain events
+│   ├── OrderService.Service/          # API & business logic
+│   └── OrderService.Worker/           # Background workers & handlers
 ├── README.md
-│
-└── src/
-    ├── BuildingBlocks/
-    │   └── Messaging/
-    │       ├── Abstractions/
-    │       │   └── Messaging.Abstractions/
-    │       │       ├── IKafkaProducer.cs
-    │       │       ├── IKafkaMessageSerializer.cs
-    │       │       └── IKafkaTopicResolver.cs
-    │       │
-    │       └── Kafka/
-    │           ├── Configuration/
-    │           │   ├── KafkaOptions.cs
-    │           │   ├── KafkaOptionsValidator.cs
-    │           │   ├── KafkaProducerOptions.cs
-    │           │   ├── KafkaRetryOptions.
-    │           │   └── KafkaTopicOptions.cs
-    │           │
-    │           ├── Producer/
-    │           │   ├── Factories/
-    │           │   │   ├── IKafkaProducerFactory.cs
-    │           │   │   ├── IKafkaRetryPolicyFactory.cs
-    │           │   │   ├── KafkaProducerFactory.cs
-    │           │   │   └── KafkaRetryPolicyFactory.cs
-    │           │   │
-    │           │   └── KafkaProducer.cs
-    │           │
-    │           ├── Serialization/
-    │           │   └── KafkaMessageSerializer.cs
-    │           │
-    │           ├── Topics/
-    │           │   ├── KafkaTopicDefinition.cs
-    │           │   └── KafkaTopicResolver.cs
-    │           │
-    │           └── DependencyInjection/
-    │               └── ServiceCollectionExtensions.cs
-    │
-    └── OrderService/
-        ├── OrderService.Contracts/
-        │   └── Events/
-        │       └── OrderCreated.cs
-        │
-        └── OrderService.Producer/
-            ├── appsettings.json
-            └── Program.cs
-```
+└── LICENSE
+````
 
 ---
 
-## Messaging Abstractions
+## Quick Start
 
-The `Messaging.Abstractions` project defines **infrastructure-agnostic contracts**.
-
-### IKafkaProducer
-
-```csharp
-public interface IKafkaProducer
-{
-    Task ProduceAsync<T>(
-        T message,
-        string key,
-        CancellationToken cancellationToken = default);
-}
-```
-
-Purpose:
-
-* isolates application code from Kafka APIs
-* enables testing and future extensibility
-* allows multiple producer implementations
-
----
-
-### IKafkaMessageSerializer
-
-Responsible for message serialization.
-
-* decouples message format from Kafka
-* enables future migration to Avro / Protobuf
-* enforces a single serialization strategy
-
----
-
-### IKafkaTopicResolver
-
-Maps domain events to Kafka topics.
-
-* event ≠ topic
-* centralized routing logic
-* supports versioning and naming conventions
-
----
-
-## Kafka Messaging Implementation
-
-The `Messaging.Kafka` project provides a **production-ready Kafka implementation** of the abstractions.
-
-### Configuration
-
-Strongly-typed and validated configuration:
-
-* `KafkaOptions`
-* `KafkaProducerOptions`
-* `KafkaRetryOptions`
-* `KafkaTopicOptions`
-
-All Kafka behavior is **configuration-driven**.
-
----
-
-### Producer
-
-`KafkaProducer` implements `IKafkaProducer` and encapsulates:
-
-* producer lifecycle management
-* retry handling
-* acknowledgment configuration
-* delivery guarantees
-
-Producer creation and retry behavior are managed via dedicated factories.
-
----
-
-### Serialization
-
-`KafkaMessageSerializer` currently uses JSON serialization.
-
-The design intentionally allows seamless migration to:
-
-* Schema Registry
-* Avro / Protobuf
-* versioned schemas
-
----
-
-### Topic Management
-
-* `KafkaTopicDefinition`
-* `KafkaTopicResolver`
-
-Topics are treated as **explicit infrastructure resources**, not inline strings.
-
----
-
-### Dependency Injection
-
-Kafka messaging is integrated through a single extension:
-
-```csharp
-services.AddKafkaMessaging(configuration);
-```
-
-No Kafka-specific code leaks into application services.
-
----
-
-## Order Service
-
-### Domain Event
-
-```csharp
-public record OrderCreated(
-    Guid OrderId,
-    DateTime CreatedAt,
-    decimal TotalAmount);
-```
-
-The event is defined in a dedicated **Contracts** project and represents a stable integration boundary.
-
----
-
-### Producer Application
-
-`OrderService.Producer.Console` demonstrates how a service publishes domain events
-without direct dependency on Kafka infrastructure.
-
----
-
-## Configuration
-
-The platform is fully configuration-driven. Kafka and logging behavior are defined via `appsettings.json`.
-
-### Logging
-
-Logging is configured using **Serilog** and outputs structured logs to the console.
-
-Key aspects:
-
-* Centralized minimum log level configuration
-* Reduced noise from framework logs (`Microsoft`, `System`)
-* Enrichment with contextual metadata (thread id, machine name)
-
-Example:
-
-``` json
-"Serilog": {
-  "Using": [ "Serilog.Sinks.Console" ],
-  "MinimumLevel": {
-    "Default": "Information",
-    "Override": {
-      "Microsoft": "Warning",
-      "System": "Warning"
-    }
-  },
-  "Enrich": [ "FromLogContext", "WithThreadId", "WithMachineName" ]
-}
-```
-
----
-
-### Kafka Configuration
-
-Kafka configuration is defined under the `Kafka` section and mapped to strongly-typed options.
-
-#### Bootstrap Servers
-
-``` json
-"BootstrapServers": "localhost:9094"
-```
-
-Specifies the Kafka cluster entry point. Multiple brokers can be provided for production environments.
-
----
-
-#### Producer Settings
-
-``` json
-"Producer": {
-  "Acks": "All",
-  "EnableIdempotence": true
-}
-```
-
-* `Acks = All` ensures messages are acknowledged by all in-sync replicas
-* `EnableIdempotence = true` guarantees safe retries without duplicate message delivery
-
----
-
-#### Topic Mapping
-
-``` json
-"Topics": [
-  {
-    "Event": "OrderCreated",
-    "Name": "orders.created"
-  }
-]
-```
-
-Defines an explicit mapping between domain events and Kafka topics.
-
-This approach:
-
-* avoids hard-coded topic names
-* centralizes routing logic
-* simplifies event versioning
-
----
-
-#### Retry Policy
-
-``` json
-"Retry": {
-  "RetryCount": 5,
-  "BaseDelayMs": 100
-}
-```
-
-Controls producer retry behavior:
-
-* `RetryCount` — maximum number of retry attempts
-* `BaseDelayMs` — base delay used for retry backoff
-
-Retry behavior is applied consistently via a dedicated retry policy factory.
-
----
-
-## Running the Platform
-
-### Start Kafka Infrastructure
+### Start Kafka
 
 ```bash
 docker compose up -d
 ```
 
-### Run the Producer
+---
 
-```bash
-dotnet run --project src/OrderService/OrderService.Producer
+## Producer (Publisher) Setup
+
+### Configuration
+
+```json
+"Kafka": {
+  "BootstrapServers": "localhost:9094",
+  "Producer": {
+    "Acks": "All",
+    "EnableIdempotence": true
+  },
+  "Topics": [
+    {
+      "EventKey": "OrderCreated",
+      "Name": "orders.created"
+    }
+  ],
+  "Retry": {
+    "RetryCount": 3,
+    "BaseDelayMs": 200
+  }
+}
 ```
 
-Events can be inspected using Kafka UI.
+**Parameter explanation:**
+
+* **BootstrapServers** — Kafka broker address(es)
+* **Producer.Acks** — message acknowledgment strategy (`All` = wait for all in-sync replicas)
+* **Producer.EnableIdempotence** — ensures messages are not duplicated on retries
+* **Topics** — map event keys to Kafka topic names
+* **Retry.RetryCount** — maximum number of retries on failure
+* **Retry.BaseDelayMs** — base delay between retries in milliseconds
+
+### DI Setup
+
+```csharp
+builder.Services.AddKafkaCoreMessaging(builder.Configuration);
+builder.Services.AddKafkaProducerMessaging(builder.Configuration);
+```
+
+### Sending Messages
+
+```csharp
+var evt = new OrderCreated(
+    orderId,
+    request.CustomerId,
+    request.TotalAmount,
+    DateTime.UtcNow);
+
+await publisher.ProduceAsync(
+    key: orderId.ToString(),
+    message: evt,
+    cancellationToken: ct);
+```
 
 ---
 
-## Design Decisions
+## Consumer (Subscriber) Setup
 
-* Kafka clients are **long-lived** and centrally managed
-* All Kafka configuration is externalized
-* Messaging concerns are isolated from domain logic
-* The system is designed to evolve toward:
+### Configuration
 
-    * transactional producers
-    * exactly-once semantics
-    * stream processing
-    * observability and monitoring
+```json
+"Kafka": {
+  "BootstrapServers": "localhost:9094",
+  "Consumer": {
+    "GroupId": "order-service-group",
+    "EnableAutoCommit": false
+  },
+  "Topics": [
+    {
+      "EventKey": "OrderCreated",
+      "Name": "orders.created"
+    }
+  ],
+  "Retry": {
+    "RetryCount": 5,
+    "BaseDelayMs": 100
+  }
+}
+```
+
+**Parameter explanation:**
+
+* **BootstrapServers** — Kafka broker address(es)
+* **Consumer.GroupId** — consumer group ID
+* **Consumer.EnableAutoCommit** — if `false`, offsets are committed manually after successful handling
+* **Topics** — map event keys to Kafka topic names
+* **Retry.RetryCount** — max retry attempts for handling failure
+* **Retry.BaseDelayMs** — base delay between retries in milliseconds
+
+### Handler Example
+
+```csharp
+public sealed class OrderCreatedHandler : IMessageHandler<OrderCreated>
+{
+    private readonly ILogger<OrderCreatedHandler> _logger;
+
+    public OrderCreatedHandler(ILogger<OrderCreatedHandler> logger)
+    {
+        _logger = logger;
+    }
+
+    public async Task HandleAsync(
+        OrderCreated message,
+        CancellationToken cancellationToken)
+    {
+        _logger.LogInformation(
+            "Start handling OrderCreated event. OrderId={OrderId}, CustomerId={CustomerId}, TotalAmount={TotalAmount}",
+            message.OrderId,
+            message.CustomerId,
+            message.TotalAmount);
+
+        _logger.LogInformation(
+            "OrderCreated event successfully handled. OrderId={OrderId}",
+            message.OrderId);
+
+        await Task.CompletedTask;
+    }
+}
+```
+
+### DI Setup
+
+```csharp
+// Core Kafka services
+builder.Services.AddKafkaCoreMessaging(builder.Configuration);
+
+// Consumer services
+builder.Services.AddKafkaConsumerMessaging(builder.Configuration);
+
+// Register handler
+builder.Services.AddKafkaHandler<OrderCreated, OrderCreatedHandler>();
+
+// Register background worker
+builder.Services.AddMessageWorkerHostedRuntime();
+```
 
 ---
 
-## Roadmap
+## Design Philosophy
 
-* Kafka Consumers with manual offset management
-* Background processing and resilience patterns
-* Retry topics and dead-letter queues
-* Transactional messaging
-* Stream processing and aggregations
-* Observability and metrics
+* **Simple > Complex**
+* **Transparent > Hidden Magic**
+* **Flexible > Opinionated**
 
----
-
-## Status
-
-Active development
-The project evolves incrementally with a strong focus on correctness, reliability, and architectural clarity.
+This project is for **developers who want to work with Kafka directly, without extra framework overhead**.
 
 ---
 

@@ -45,6 +45,38 @@ ecommerce-event-platform/
 
 ---
 
+## Contract Setup (Domain Events)
+
+Each domain event **must have the `EventKey` attribute** that matches the `EventKey` specified in your `appsettings.json`. This ensures that messages are correctly mapped to Kafka topics.
+
+```csharp
+using Messaging.Abstractions.Messages;
+
+[EventKey("OrderCreated")]
+public class OrderCreated
+{
+    public OrderCreated(Guid orderId, Guid customerId, decimal totalAmount, DateTime createdAt)
+    {
+        OrderId = orderId;
+        CustomerId = customerId;
+        TotalAmount = totalAmount;
+        CreatedAt = createdAt;
+    }
+
+    public Guid OrderId { get; init; }
+    public Guid CustomerId { get; init; }
+    public decimal TotalAmount { get; init; }
+    public DateTime CreatedAt { get; init; }
+}
+```
+
+**Key points:**
+
+* The string in `[EventKey("…")]` **must match the `EventKey` in appsettings.json** under the `Topics` section.
+* This attribute allows the Kafka infrastructure to route the event to the correct topic automatically.
+
+---
+
 ## Quick Start
 
 ### Start Kafka
@@ -59,7 +91,7 @@ docker compose up -d
 
 ### Configuration
 
-```json
+``` json
 "Kafka": {
   "BootstrapServers": "localhost:9094",
   "Producer": {
@@ -116,7 +148,7 @@ await publisher.ProduceAsync(
 
 ### Configuration
 
-```json
+``` json
 "Kafka": {
   "BootstrapServers": "localhost:9094",
   "Consumer": {

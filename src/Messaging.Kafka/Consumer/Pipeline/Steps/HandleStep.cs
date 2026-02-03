@@ -1,3 +1,4 @@
+using Messaging.Kafka.Consumer.Factories;
 using Messaging.Kafka.Consumer.Registry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -7,6 +8,7 @@ namespace Messaging.Kafka.Consumer.Pipeline.Steps;
 public sealed class HandleStep(
     IServiceScopeFactory scopeFactory,
     IKafkaHandlerRegistry registry,
+    IHandlerInvokerFactory invokerFactory,
     ILogger<HandleStep> logger)
     : IKafkaPipelineStep
 {
@@ -16,9 +18,9 @@ public sealed class HandleStep(
     {
         var descriptor = registry.GetDescriptor(
             context.ConsumeResult.Topic);
-
-        using var scope = scopeFactory.CreateScope();
-        var handler = scope.ServiceProvider.GetRequiredService(
+        
+        var invoker = invokerFactory.GetOrCreate(
+            descriptor.EventType,
             descriptor.HandlerType);
 
         // var messageContext = new MessageContext
@@ -36,9 +38,13 @@ public sealed class HandleStep(
             "Invoking handler {Handler} for event {Event}",
             descriptor.HandlerType.Name,
             descriptor.EventType.Name);
+        
 
-        await ((dynamic)handler).HandleAsync(
-            (dynamic)context.Message!,
+        using var scope = scopeFactory.CreateScope();
+        
+        await invoker(
+            scope.ServiceProvider,
+            context.Message!,
             ct);
 
         return await Task.FromResult(

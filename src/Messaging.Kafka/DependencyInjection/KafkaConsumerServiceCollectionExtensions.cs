@@ -24,6 +24,7 @@ public static class KafkaConsumerServiceCollectionExtensions
         
         services.AddSingleton<IValidateOptions<KafkaConsumerOptions>, KafkaConsumerOptionsValidator>();
         services.AddSingleton<IKafkaConsumerFactory, KafkaConsumerFactory>();
+        services.AddSingleton<IHandlerInvokerFactory, HandlerInvokerFactory>();
         services.AddSingleton<IKafkaHandlerRegistry, KafkaHandlerRegistry>();
         
         services.AddSingleton<IKafkaPipeline, KafkaPipeline>();
